@@ -16,10 +16,13 @@ import App
 ///
 /// .run() runs the Droplet's commands, 
 /// if no command is given, it will default to "serve"
+import LeafProvider
+import PostgreSQLProvider
+
 let config = try Config()
 try config.setup()
-
+try config.addProvider(LeafProvider.Provider.self)
+try config.addProvider(PostgreSQLProvider.Provider.self)
 let drop = try Droplet(config)
 try drop.setup()
-
 try drop.run()

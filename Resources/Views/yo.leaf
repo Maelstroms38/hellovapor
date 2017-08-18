@@ -1,0 +1,8 @@
+#extend("master")
+
+#export("head") {
+ <title>Hello, World!</title>
+}
+#export("body") {
+    <h1>Hello, #(name)!</h1>
+}
