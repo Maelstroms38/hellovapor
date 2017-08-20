@@ -86,6 +86,9 @@ extension Droplet {
         }
         get("description") { req in return req.description }
         
-        try resource("posts", PostController.self)
+        //try resource("posts", PostController.self)
+        resource("acronyms", AcronymsController())
+        let controller = TILController()
+        controller.addRoutes(drop: self)
     }
 }
