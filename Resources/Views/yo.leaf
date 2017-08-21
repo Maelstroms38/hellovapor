@@ -1,4 +1,4 @@
-#extend("master")
+#extend("base")
 
 #export("head") {
  <title>Hello, World!</title>

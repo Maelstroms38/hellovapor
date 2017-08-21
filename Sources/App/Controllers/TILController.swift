@@ -12,12 +12,20 @@ import HTTP
 
 final class TILController {
     
+    var drop: Droplet?
+    
     func addRoutes(drop: Droplet) {
+        self.drop = drop
         drop.get("til", handler: indexView)
     }
     
     func indexView(request: Request) throws -> ResponseRepresentable {
-        return try JSON(node: Acronym.all().makeNode(in: myContext))
+        let acronyms = try Acronym.all().makeNode(in: myContext)
+        let params = try Node(node: [
+            "acronyms": acronyms,
+        ])
+        guard let drop = self.drop else { throw Abort.badRequest }
+        return try drop.view.make("index", params)
     }
     
 }
