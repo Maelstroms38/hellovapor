@@ -12,7 +12,7 @@ final class Acronym: NodeRepresentable, JSONRepresentable, Model, ResponseRepres
     
     let storage = Storage()
     
-    var id: Node?
+    var id: Node
     var exists: Bool = false
     
     var short: String
@@ -29,6 +29,7 @@ final class Acronym: NodeRepresentable, JSONRepresentable, Model, ResponseRepres
         long = try node.get("long")
     }
     init(row: Row) throws {
+        self.id = try row.get("id")
         self.short = try row.get("short")
         self.long = try row.get("long")
     }
@@ -40,13 +41,14 @@ final class Acronym: NodeRepresentable, JSONRepresentable, Model, ResponseRepres
     }
     func makeNode(in context: Context?) throws -> Node {
         return try Node(node: [
-            "id": id ?? 0,
+            "id": id,
             "short": short,
             "long": long
         ])
     }
     func makeJSON() throws -> JSON {
         var json = JSON()
+        try json.set("id", id)
         try json.set("short", short)
         try json.set("long", long)
         return json
@@ -58,8 +60,6 @@ final class Acronym: NodeRepresentable, JSONRepresentable, Model, ResponseRepres
 // MARK: Fluent Preparation
 
 extension Acronym: Preparation {
-    /// Prepares a table/collection in the database
-    /// for storing Posts
     static func prepare(_ database: Database) throws {
         try database.create(self) { builder in
             builder.id()
