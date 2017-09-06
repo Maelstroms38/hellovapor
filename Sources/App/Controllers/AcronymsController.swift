@@ -10,38 +10,58 @@ import Foundation
 import Vapor
 import HTTP
 
-final class AcronymsController: ResourceRepresentable {
+final class AcronymsController {
+   
+    private let droplet: Droplet
     
+    var context: Context?
+    
+    init(droplet: Droplet) {
+        self.droplet = droplet
+    }
+    func addRoutes() {
+        let basic = droplet.grouped("acronyms")
+        basic.get(handler: index)
+        basic.get(Acronym.parameter, handler: show)
+        basic.post(handler: create)
+        basic.delete(Acronym.parameter, handler: delete)
+        basic.patch(Acronym.parameter, handler: update)
+        basic.get(Acronym.parameter, "user", handler: showUser)
+        
+    }
     func index(request: Request) throws -> ResponseRepresentable {
         return try JSON(node: Acronym.all().makeJSON())
     }
-    func makeResource() -> Resource<Acronym> {
-        return Resource(
-            index: index,
-            store: create,
-            show: show,
-            destroy: delete
-        )
-    }
     func create(_ request: Request) throws -> ResponseRepresentable {
-        let acronym = try request.acronym()
+        guard let short = request.data["short"]?.string else { throw Abort.badRequest }
+        guard let long = request.data["long"]?.string else { throw Abort.badRequest }
+        guard let userID = request.data["user_id"]?.string else { throw Abort.badRequest }
+        let acronym = Acronym(short: short, long: long, userID: Identifier(userID))
         try acronym.save()
         return acronym
     }
-    func show(request: Request, acronym: Acronym) throws -> ResponseRepresentable {
+    func show(request: Request) throws -> ResponseRepresentable {
+        let acronym = try request.parameters.next(Acronym.self)
         return acronym
     }
-    func update(request: Request, acronym: Acronym) throws -> ResponseRepresentable {
+    func update(request: Request) throws -> ResponseRepresentable {
         let newAcronym = try request.acronym()
-        let acro = acronym
+        let acro = try request.parameters.next(Acronym.self)
         acro.short = newAcronym.short
         acro.long = newAcronym.long
         try acro.save()
         return acro
     }
-    func delete(request: Request, acronym: Acronym) throws -> ResponseRepresentable {
+    func delete(request: Request) throws -> ResponseRepresentable {
+        let acronym = try request.parameters.next(Acronym.self)
         try acronym.delete()
         return JSON([:])
+    }
+    func showUser(request: Request) throws -> ResponseRepresentable {
+        let acronym = try request.parameters.next(Acronym.self)
+        print(acronym.userID.double ?? "nada")
+        let user = try acronym.user() //owner.get()
+        return try JSON(node: user.makeNode(in: context))
     }
     
 }

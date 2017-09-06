@@ -1,6 +1,7 @@
 import Vapor
 import PostgreSQLProvider
 import Node
+import VaporValidation
 
 final class MyContext: Context {
 }
@@ -69,7 +70,6 @@ extension Droplet {
         get("filternotAFK") { request in
             return try JSON(node: Acronym.makeQuery().filter("short", .notEquals, "AFK").all().makeNode(in: myContext))
         }
-
         get("update") { request in
             guard let first = try Acronym.makeQuery().first(),
                 let long = request.data["long"]?.string else {
@@ -86,9 +86,17 @@ extension Droplet {
         }
         get("description") { req in return req.description }
         
-        //try resource("posts", PostController.self)
-        resource("acronyms", AcronymsController())
+        let acronyms = AcronymsController(droplet: self)
+        acronyms.context = myContext
+        acronyms.addRoutes()
+        
         let controller = TILController()
+        controller.context = myContext
         controller.addRoutes(drop: self)
+        
+        let userController = UserController(droplet: self)
+        userController.context = myContext
+        userController.addRoutes()
+        
     }
 }
