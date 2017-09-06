@@ -8,5 +8,15 @@
     
     "//": "It's very rare that a server manages its own TLS.",
     "//": "More commonly, vapor is served behind a proxy like nginx.",
-    "securityLayer": "none"
+    "securityLayer": "none",
+    
+    "//": "TLS Security Layer",
+    "//": {
+     "tls": {
+     "certificates": "files",
+     "certificateFile": "/Users/michael/Vapor/HelloVapor/Config/secrets/certs/servercert.pem",
+     "privateKeyFile": "/Users/michael/Vapor/HelloVapor/Config/secrets/certs/serverkey.pem",
+     "signature": "selfSigned"
+     }
+    }
 }

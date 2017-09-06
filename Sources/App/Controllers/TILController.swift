@@ -35,8 +35,8 @@ final class TILController {
     func addAcronym(request: Request) throws -> ResponseRepresentable {
         guard let short = request.data["short"]?.string else { throw Abort.badRequest }
         guard let long = request.data["long"]?.string else { throw Abort.badRequest }
-        //guard let id = request.data["user_id"]?.int else { throw Abort.badRequest }
-        let acronym = Acronym(short: short, long: long) //, userID: Identifier(id)
+        guard let userId = request.data["user_id"]?.string else { throw Abort.badRequest }
+        let acronym = Acronym(short: short, long: long, userID: Identifier(userId))
         try acronym.save()
         return try indexView(request: request)
         

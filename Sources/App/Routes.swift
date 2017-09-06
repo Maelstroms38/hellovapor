@@ -42,15 +42,15 @@ extension Droplet {
             return JSON(node: version)
         }
         
-        get("model") { request in
-            let acronym = Acronym(short: "LOL", long: "Laugh out loud")
-            return try acronym.makeJSON()
-        }
-        get("modelTest") { request in
-            let acronym = Acronym(short: "AFK", long: "All Four Kegs")
-            try acronym.save()
-            return try JSON(node: Acronym.all()) //.makeNode(in: Context.self as? Context)
-        }
+//        get("model") { request in
+//            let acronym = Acronym(short: "LOL", long: "Laugh out loud", user)
+//            return try acronym.makeJSON()
+//        }
+//        get("modelTest") { request in
+//            let acronym = Acronym(short: "AFK", long: "All Four Kegs")
+//            try acronym.save()
+//            return try JSON(node: Acronym.all()) //.makeNode(in: Context.self as? Context)
+//        }
         
         post("new") { request in
             print(request)

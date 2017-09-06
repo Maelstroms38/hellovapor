@@ -33,10 +33,7 @@ final class AcronymsController {
         return try JSON(node: Acronym.all().makeJSON())
     }
     func create(_ request: Request) throws -> ResponseRepresentable {
-        guard let short = request.data["short"]?.string else { throw Abort.badRequest }
-        guard let long = request.data["long"]?.string else { throw Abort.badRequest }
-        guard let userID = request.data["user_id"]?.string else { throw Abort.badRequest }
-        let acronym = Acronym(short: short, long: long, userID: Identifier(userID))
+        let acronym = try request.parameters.next(Acronym.self)
         try acronym.save()
         return acronym
     }
@@ -59,9 +56,9 @@ final class AcronymsController {
     }
     func showUser(request: Request) throws -> ResponseRepresentable {
         let acronym = try request.parameters.next(Acronym.self)
-        print(acronym.userID.double ?? "nada")
-        let user = try acronym.user() //owner.get()
-        return try JSON(node: user.makeNode(in: context))
+        let user = acronym.user //owner.get()
+        guard let json = try user.get()?.makeJSON() else {throw Abort.badRequest}
+        return JSON(json: json)
     }
     
 }

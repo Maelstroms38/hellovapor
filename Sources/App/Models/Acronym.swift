@@ -20,10 +20,9 @@ final class Acronym: NodeRepresentable, JSONRepresentable, Model, ResponseRepres
     
     var userID: Identifier
     
-    var owner: Parent<Acronym, User> {
+    var user: Parent<Acronym, User> {
         return parent(id: userID)
     }
-    
     init(short: String, long: String, userID: Identifier = nil) {
         self.id = nil
         self.short = short
@@ -67,9 +66,6 @@ final class Acronym: NodeRepresentable, JSONRepresentable, Model, ResponseRepres
     }
     func makeResponse() throws -> Response {
         return try makeJSON().makeResponse()
-    }
-    func user() throws -> User? {
-        return try owner.get()
     }
 }
 // MARK: Fluent Preparation
